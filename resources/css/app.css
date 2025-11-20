@@ -1,0 +1,11 @@
+/* Layout fix untuk DEKU sidebar */
+.deku-wrapper {
+    display: flex;
+}
+
+.deku-content {
+    flex-grow: 1;
+    margin-left: 240px; /* ukuran sidebar */
+    padding: 20px;
+}
+
