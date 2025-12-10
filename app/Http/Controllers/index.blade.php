@@ -45,7 +45,7 @@
                         <tr>
                             <th width="5%">No</th>
                             <th>Nama Dompet</th>
-                            <th>Saldo Awal</th>
+                            <th>Saldo Saat Ini</th>
                             <th width="20%">Aksi</th>
                         </tr>
                     </thead>

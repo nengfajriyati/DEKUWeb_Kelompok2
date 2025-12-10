@@ -37,10 +37,11 @@
                     <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $wallet->name) }}" required autofocus>
                 </div>
                 <div class="mb-3">
-                    <label for="balance" class="form-label">Saldo</label>
+                    <label for="balance" class="form-label">Saldo Saat Ini (Dihitung Otomatis)</label>
                     <div class="input-group">
                         <span class="input-group-text">Rp</span>
-                        <input type="number" class="form-control @error('balance') is-invalid @enderror" id="balance" name="balance" value="{{ old('balance', $wallet->balance) }}" required min="0" step="1000">
+                        {{-- Jadikan readonly agar tidak bisa diubah manual --}}
+                        <input type="text" class="form-control" id="balance" value="{{ number_format($wallet->balance, 0, ',', '.') }}" readonly>
                     </div>
                 </div>
                 <div class="d-flex justify-content-end pt-3">
