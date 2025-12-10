@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Income;
+use App\Models\Wallet;
 use App\Models\Category;
 use Illuminate\Http\Request;
 
@@ -14,6 +15,7 @@ class IncomeController extends Controller
     public function index()
     {
         $incomes = Income::where('user_id', auth()->id())
+            ->with('wallet') // Eager load relasi wallet
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -25,7 +27,9 @@ class IncomeController extends Controller
     // =============================
     public function create()
     {
-        return view('income.create');
+        $wallets = Wallet::where('user_id', auth()->id())->get();
+
+        return view('income.create', compact('wallets'));
     }
 
     // =============================
@@ -34,12 +38,14 @@ class IncomeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'wallet_id' => 'required|exists:wallets,id',
             'amount' => 'required|numeric',
             'description' => 'required',
         ]);
 
         Income::create([
             'user_id' => auth()->id(),
+            'wallet_id' => $request->wallet_id,
             'amount' => $request->amount,
             'description' => $request->description,
         ]);
@@ -53,8 +59,9 @@ class IncomeController extends Controller
     public function edit($id)
     {
         $income = Income::findOrFail($id);
+        $wallets = Wallet::where('user_id', auth()->id())->get();
 
-        return view('income.edit', compact('income'));
+        return view('income.edit', compact('income', 'wallets'));
     }
 
     // =============================
@@ -63,6 +70,7 @@ class IncomeController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
+            'wallet_id' => 'required|exists:wallets,id',
             'amount' => 'required|numeric',
             'description' => 'required',
         ]);
@@ -70,6 +78,7 @@ class IncomeController extends Controller
         $income = Income::findOrFail($id);
 
         $income->update([
+            'wallet_id' => $request->wallet_id,
             'amount' => $request->amount,
             'description' => $request->description,
         ]);
