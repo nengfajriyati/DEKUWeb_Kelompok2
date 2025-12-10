@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Income;
 use App\Models\Expense;
 use App\Models\Wallet;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // sementara untuk tugas → pakai user dummy ID 1
-        $userId = 1;
+        $userId = Auth::id();
 
         $totalIncome   = Income::where('user_id', $userId)->sum('amount');
         $totalExpense  = Expense::where('user_id', $userId)->sum('amount');
