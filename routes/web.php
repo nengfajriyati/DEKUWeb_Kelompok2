@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\IncomeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WalletController;
+use App\Http\Controllers\GoalController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -60,6 +61,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/wallet/create', [WalletController::class, 'create'])->name('wallet.create');
     Route::post('/wallet', [WalletController::class, 'store'])->name('wallet.store');
 
+});
+
+
+
+Route::middleware('auth')->group(function () {
+    Route::resource('goal', GoalController::class);
 });
 
 require __DIR__.'/auth.php';
