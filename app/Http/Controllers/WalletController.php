@@ -4,100 +4,71 @@ namespace App\Http\Controllers;
 
 use App\Models\Wallet;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class WalletController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $wallets = Wallet::where('user_id', Auth::id())
-            ->orderBy('created_at', 'desc')
-            ->get();
-
+        $wallets = Wallet::where('user_id', auth()->id())->get();
         return view('wallet.index', compact('wallets'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('wallet.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'balance' => 'required|numeric|min:0',
+            'name' => 'required',
+            'balance' => 'required|numeric',
         ]);
 
         Wallet::create([
-            'user_id' => Auth::id(),
+            'user_id' => auth()->id(),
             'name' => $request->name,
             'balance' => $request->balance,
-            // 'icon' => $request->icon, // Jika kamu menambahkan field icon
         ]);
 
-        return redirect()->route('wallet.index')->with('success', 'Dompet berhasil ditambahkan!');
+        return redirect()->route('wallet.index')
+            ->with('success', 'Dompet berhasil ditambahkan');
     }
 
-    /**
-     * Display the specified resource.
-     * (Tidak digunakan untuk CRUD dasar, bisa dikosongkan)
-     */
-    public function show(Wallet $wallet)
+    public function edit($id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Wallet $wallet)
-    {
-        // Memastikan pengguna hanya bisa mengedit dompet miliknya
-        if ($wallet->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
-        }
-
+        $wallet = Wallet::findOrFail($id);
         return view('wallet.edit', compact('wallet'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Wallet $wallet)
+    public function update(Request $request, $id)
     {
-        if ($wallet->user_id !== Auth::id()) {
-            abort(403, 'Unauthorized action.');
-        }
-
         $request->validate([
-            'name' => 'required|string|max:255',
-            'balance' => 'required|numeric|min:0',
+            'name' => 'required|string|max:100',
         ]);
 
-        $wallet->update($request->only(['name', 'balance']));
+        $wallet = Wallet::findOrFail($id);
+        $wallet->update([
+            'name' => $request->name,
+        ]);
 
-        return redirect()->route('wallet.index')->with('success', 'Data dompet berhasil diperbarui!');
+        return redirect()->route('wallet.index')
+                        ->with('success', 'Dompet berhasil diperbarui');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Wallet $wallet)
+    public function destroy($id)
     {
-        if ($wallet->user_id === Auth::id()) {
-            $wallet->delete();
-            return redirect()->route('wallet.index')->with('success', 'Dompet berhasil dihapus.');
+        $wallet = Wallet::findOrFail($id);
+
+        // optional safety (kalau ada relasi income / expense)
+        if ($wallet->incomes()->count() > 0 || $wallet->expenses()->count() > 0) {
+            return redirect()->back()
+                ->with('error', 'Dompet tidak bisa dihapus karena masih memiliki transaksi');
         }
-        return redirect()->route('wallet.index')->with('error', 'Gagal menghapus dompet.');
+
+        $wallet->delete();
+
+        return redirect()->route('wallet.index')
+                        ->with('success', 'Dompet berhasil dihapus');
     }
 }

@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\IncomeController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\WalletController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -48,6 +49,16 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/expense/{id}', [ExpenseController::class, 'destroy'])
         ->name('expense.destroy');
+
+});
+
+Route::resource('wallet', WalletController::class);
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('/wallet', [WalletController::class, 'index'])->name('wallet.index');
+    Route::get('/wallet/create', [WalletController::class, 'create'])->name('wallet.create');
+    Route::post('/wallet', [WalletController::class, 'store'])->name('wallet.store');
 
 });
 

@@ -7,13 +7,14 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('wallets', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('name');          // nama dompet (BCA, Cash, OVO, dll)
-            $table->integer('balance')->default(0);
-            $table->timestamps();
-        });
+    Schema::create('wallets', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('user_id')->constrained()->onDelete('cascade');
+        $table->string('name');
+        $table->decimal('balance', 15, 2)->default(0);
+        $table->timestamps();
+    });
+
     }
 
     public function down(): void
