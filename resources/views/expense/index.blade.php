@@ -33,7 +33,7 @@
                 @forelse($expenses as $expense)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td>Rp {{ number_format($income->amount) }}</td>
+                    <td>Rp {{ number_format($expense->amount) }}</td>
                     <td>{{ $expense->description }}</td>
                     <td>{{ $expense->created_at->format('d M Y') }}</td>
                     <td>

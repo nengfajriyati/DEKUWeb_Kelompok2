@@ -18,7 +18,7 @@ class ExpenseController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('expense.index_expense', compact('expenses'));
+        return view('expense.index', compact('expenses'));
     }
 
     // =============================
@@ -28,7 +28,7 @@ class ExpenseController extends Controller
     {
         $wallets = Wallet::where('user_id', auth()->id())->get();
 
-        return view('expense.create_expense', compact('wallets'));
+        return view('expense.create', compact('wallets'));
     }
 
     // =============================
@@ -60,7 +60,7 @@ class ExpenseController extends Controller
         $expense = Expense::findOrFail($id);
         $wallets = Wallet::where('user_id', auth()->id())->get();
 
-        return view('expense.edit_expense', compact('expense', 'wallets'));
+        return view('expense.edit', compact('expense', 'wallets'));
     }
 
     // =============================

@@ -5,6 +5,7 @@ use App\Http\Controllers\IncomeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\GoalController;
+use App\Http\Controllers\ExpenseController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -28,28 +29,19 @@ Route::middleware('auth')->group(function () {
     Route::delete('/income/{id}', [IncomeController::class, 'destroy'])->name('income.destroy');
 });
 
-use App\Http\Controllers\ExpenseController; // pastikan ditambahkan
+
 
 // EXPENSE PAGE
 Route::middleware('auth')->group(function () {
 
-    Route::get('/expense', [ExpenseController::class, 'index'])
-        ->name('expense.index');
+    Route::get('/expense', [ExpenseController::class, 'index'])->name('expense.index');
+    Route::get('/expense/create', [ExpenseController::class, 'create'])->name('expense.create');
+    Route::post('/expense', [ExpenseController::class, 'store'])->name('expense.store');
 
-    Route::get('/expense/create', [ExpenseController::class, 'create'])
-        ->name('expense.create');
+    Route::get('/expense/{id}/edit', [ExpenseController::class, 'edit'])->name('expense.edit');
+    Route::put('/expense/{id}', [ExpenseController::class, 'update'])->name('expense.update');
 
-    Route::post('/expense', [ExpenseController::class, 'store'])
-        ->name('expense.store');
-
-    Route::get('/expense/{id}/edit', [ExpenseController::class, 'edit'])
-        ->name('expense.edit');
-
-    Route::put('/expense/{id}', [ExpenseController::class, 'update'])
-        ->name('expense.update');
-
-    Route::delete('/expense/{id}', [ExpenseController::class, 'destroy'])
-        ->name('expense.destroy');
+    Route::delete('/expense/{id}', [ExpenseController::class, 'destroy'])->name('expense.destroy');
 
 });
 
