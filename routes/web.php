@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\GoalController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\ReminderController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -55,9 +56,12 @@ Route::middleware('auth')->group(function () {
 
 });
 
-
-
 Route::resource('goal', GoalController::class)->middleware('auth');
+
+Route::resource('reminder', ReminderController::class)
+    ->only(['index', 'create', 'store', 'destroy'])
+    ->middleware('auth');
+
 
 
 require __DIR__.'/auth.php';

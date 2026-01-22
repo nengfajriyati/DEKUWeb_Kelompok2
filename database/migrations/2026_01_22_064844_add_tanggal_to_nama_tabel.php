@@ -5,14 +5,14 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up()
+    public function up(): void
     {
         Schema::table('incomes', function (Blueprint $table) {
-            $table->date('date')->after('amount');
+            $table->date('date')->nullable()->after('amount');
         });
     }
 
-    public function down()
+    public function down(): void
     {
         Schema::table('incomes', function (Blueprint $table) {
             $table->dropColumn('date');
