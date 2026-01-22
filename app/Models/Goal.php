@@ -13,14 +13,19 @@ class Goal extends Model
         'title',
         'target_amount',
         'current_amount',
-        'deadline',
+        'deadline'
     ];
 
-    // hitung progress (%)
     public function progress()
     {
-        if ($this->target_amount == 0) return 0;
-        return round(($this->current_amount / $this->target_amount) * 100);
+        return min(100, round(($this->current_amount / $this->target_amount) * 100));
     }
+
+    public function isNearDeadline()
+    {
+        return $this->deadline && now()->diffInDays($this->deadline, false) <= 3;
+    }
+
 }
+
 

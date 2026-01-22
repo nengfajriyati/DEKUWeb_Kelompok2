@@ -6,7 +6,7 @@
 
     <style>
         body {
-            background: #eef2f7;
+            background: linear-gradient(135deg, #4cc9f0, #4361ee);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -15,30 +15,17 @@
 
         .auth-card {
             width: 400px;
-            border-radius: 12px;
+            border-radius: 14px;
             background: white;
-        }
-
-        .auth-title {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #0d1b2a;
-        }
-
-        .auth-subtitle {
-            font-size: 0.95rem;
-            color: #6c757d;
+            padding: 30px;
         }
     </style>
 </head>
 <body>
 
-<div class="auth-card shadow p-4">
-    <div class="text-center mb-4">
-        <div class="auth-title">@yield('title')</div>
-        <div class="auth-subtitle">@yield('subtitle')</div>
-    </div>
-
+<div class="auth-card shadow">
+    <h3 class="text-center fw-bold">@yield('title')</h3>
+    <p class="text-center text-muted">@yield('subtitle')</p>
     @yield('content')
 </div>
 

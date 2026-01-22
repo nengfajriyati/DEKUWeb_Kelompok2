@@ -11,15 +11,11 @@ class Income extends Model
 
     protected $fillable = [
         'user_id',
-        'wallet_id',   // penting!
+        'wallet_id',
         'amount',
         'description',
     ];
 
-    /**
-     * Relasi ke Wallet
-     * Income dimiliki oleh satu wallet
-     */
     public function wallet()
     {
         return $this->belongsTo(Wallet::class);

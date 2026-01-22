@@ -7,34 +7,24 @@
 <div class="card">
     <div class="card-body">
 
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
         <form action="{{ route('income.store') }}" method="POST">
             @csrf
 
             <div class="mb-3">
                 <label>Dompet</label>
-                    <select name="wallet_id" class="form-control" required>
-                        <option value="">-- Pilih Dompet --</option>
-                        @foreach ($wallets as $wallet)
-                            <option value="{{ $wallet->id }}">
-                                {{ $wallet->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                <select name="wallet_id" class="form-control" required>
+                    <option value="">-- Pilih Dompet --</option>
+                    @foreach($wallets as $wallet)
+                        <option value="{{ $wallet->id }}">
+                            {{ $wallet->name }} (Rp {{ number_format($wallet->balance) }})
+                        </option>
+                    @endforeach
+                </select>
             </div>
-            
+
             <div class="mb-3">
                 <label>Nominal</label>
-                <input type="number" name="amount" class="form-control" required>
+                <input type="number" name="amount" min="1" class="form-control" required>
             </div>
 
             <div class="mb-3">
@@ -42,8 +32,13 @@
                 <input type="text" name="description" class="form-control" required>
             </div>
 
-            <button class="btn btn-success">Simpan</button>
-            <a href="{{ route('income.index') }}" class="btn btn-secondary">Kembali</a>
+            <button class="btn btn-success">
+                <i class="bi bi-save"></i> Simpan
+            </button>
+
+            <a href="{{ route('income.index') }}" class="btn btn-secondary">
+                Kembali
+            </a>
 
         </form>
 

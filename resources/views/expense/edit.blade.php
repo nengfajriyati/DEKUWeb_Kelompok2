@@ -17,7 +17,7 @@
 
             <div class="mb-3">
                 <label>Keterangan</label>
-                <input type="text" name="description" value="{{ $expense->description }}" class="form-control" required>
+                <input type="text" name="description" value="{{ $expense->notes }}" class="form-control" required>
             </div>
 
             <button class="btn btn-primary">Update</button>

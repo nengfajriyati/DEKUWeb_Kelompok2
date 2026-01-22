@@ -23,41 +23,19 @@ class GoalController extends Controller
         $request->validate([
             'title' => 'required',
             'target_amount' => 'required|numeric|min:1',
-            'deadline' => 'nullable|date',
+            'deadline' => 'nullable|date'
         ]);
 
         Goal::create([
             'user_id' => auth()->id(),
             'title' => $request->title,
             'target_amount' => $request->target_amount,
-            'deadline' => $request->deadline,
+            'deadline' => $request->deadline
         ]);
 
-        return redirect()->route('goal.index')->with('success', 'Goals berhasil ditambahkan!');
-    }
-
-    public function edit($id)
-    {
-        $goal = Goal::findOrFail($id);
-        return view('goal.edit', compact('goal'));
-    }
-
-    public function update(Request $request, $id)
-    {
-        $goal = Goal::findOrFail($id);
-
-        $goal->update($request->only([
-            'title','target_amount','current_amount','deadline'
-        ]));
-
-        return redirect()->route('goal.index')->with('success', 'Goals diperbarui!');
-    }
-
-    public function destroy($id)
-    {
-        Goal::findOrFail($id)->delete();
-        return redirect()->route('goal.index')->with('success', 'Goals dihapus!');
+        return redirect()->route('goal.index');
     }
 }
+
 
 

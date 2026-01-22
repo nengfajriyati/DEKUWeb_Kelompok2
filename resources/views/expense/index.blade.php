@@ -34,7 +34,7 @@
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>Rp {{ number_format($expense->amount) }}</td>
-                    <td>{{ $expense->description }}</td>
+                    <td>{{ $expense->notes }}</td>
                     <td>{{ $expense->created_at->format('d M Y') }}</td>
                     <td>
                         <a href="{{ route('expense.edit', $expense->id) }}" class="btn btn-warning btn-sm">

@@ -4,63 +4,107 @@
 
 @section('content')
 
-<div class="d-flex justify-content-between mb-3">
-    <h4 class="fw-bold">Data Pemasukan</h4>
-    <a href="{{ route('income.create') }}" class="btn btn-primary">
-        <i class="bi bi-plus-circle"></i> Tambah Pemasukan
-    </a>
-</div>
-
 @if(session('success'))
-<div class="alert alert-success">{{ session('success') }}</div>
+<script>
+Swal.fire({
+    icon: 'success',
+    title: 'Berhasil',
+    text: '{{ session('success') }}',
+    timer: 2000,
+    showConfirmButton: false
+});
+</script>
 @endif
 
 <div class="card">
     <div class="card-body">
 
-        <table class="table table-bordered table-hover">
-            <thead class="table-light">
+        <a href="{{ route('income.create') }}" class="btn btn-primary mb-3">
+            <i class="bi bi-plus-circle"></i> Tambah Pemasukan
+        </a>
+
+        <table class="table table-hover align-middle">
+            <thead class="table-light text-center">
                 <tr>
-                    <th>#</th>
-                    <th>Nominal</th>
-                    <th>Keterangan</th>
+                    <th width="50">No</th>
                     <th>Tanggal</th>
-                    <th width="150">Aksi</th>
+                    <th>Dompet</th>
+                    <th>Keterangan</th>
+                    <th>Nominal</th>
+                    <th width="130">Aksi</th>
                 </tr>
             </thead>
 
             <tbody>
                 @forelse($incomes as $income)
                 <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>Rp {{ number_format($income->amount) }}</td>
-                    <td>{{ $income->description }}</td>
-                    <td>{{ $income->created_at->format('d M Y') }}</td>
+                    <td class="text-center">
+                        {{ $loop->iteration }}
+                    </td>
+
                     <td>
-                        <a href="{{ route('income.edit', $income->id) }}" class="btn btn-warning btn-sm">
-                            <i class="bi bi-pencil"></i>
+                        <i class="bi bi-calendar-event text-primary"></i>
+                        {{ $income->created_at->format('d M Y') }}
+                    </td>
+
+                    <td>
+                        <i class="bi bi-wallet2 text-secondary"></i>
+                        {{ $income->wallet->name ?? '-' }}
+                    </td>
+
+                    <td>
+                        {{ $income->description }}
+                    </td>
+
+                    <td class="text-success fw-semibold">
+                        <i class="bi bi-arrow-up-circle"></i>
+                        Rp {{ number_format($income->amount,0,',','.') }}
+                    </td>
+
+                    <td class="text-center">
+                        <a href="{{ route('income.edit',$income->id) }}"
+                        class="btn btn-warning btn-sm"
+                        title="Edit">
+                            <i class="bi bi-pencil-square"></i>
                         </a>
 
-                        <form action="{{ route('income.destroy', $income->id) }}" class="d-inline" method="POST">
-                            @csrf @method('DELETE')
-                            <button onclick="return confirm('Yakin hapus?')" class="btn btn-danger btn-sm">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>
+                        <button class="btn btn-danger btn-sm"
+                            onclick="hapus({{ $income->id }})"
+                            title="Hapus">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="5" class="text-center text-muted">
-                        Belum ada pemasukan.
+                    <td colspan="6" class="text-center text-muted py-3">
+                        <i class="bi bi-inbox"></i> Belum ada pemasukan
                     </td>
                 </tr>
                 @endforelse
             </tbody>
-
         </table>
+
 
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function hapus(id){
+    Swal.fire({
+        title: 'Yakin hapus?',
+        text: 'Data tidak bisa dikembalikan',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, hapus',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if(result.isConfirmed){
+            document.getElementById('hapus-'+id).submit();
+        }
+    });
+}
+</script>
 
 @endsection

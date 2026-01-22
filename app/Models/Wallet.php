@@ -12,7 +12,7 @@ class Wallet extends Model
     protected $fillable = [
         'user_id',
         'name',
-        'balance',
+        'balance'
     ];
 
     public function incomes()
@@ -24,7 +24,4 @@ class Wallet extends Model
     {
         return $this->hasMany(Expense::class);
     }
-
 }
-
-
