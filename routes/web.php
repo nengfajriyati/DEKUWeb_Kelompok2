@@ -57,8 +57,7 @@ Route::middleware('auth')->group(function () {
 
 
 
-Route::middleware('auth')->group(function () {
-    Route::resource('goal', GoalController::class);
-});
+Route::resource('goal', GoalController::class)->middleware('auth');
+
 
 require __DIR__.'/auth.php';

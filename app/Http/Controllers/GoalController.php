@@ -9,7 +9,7 @@ class GoalController extends Controller
 {
     public function index()
     {
-        $goals = Goal::where('user_id', auth()->id())->get();
+        $goals = Goal::where('user_id', auth()->id())->orderBy('created_at', 'desc')->get();
         return view('goal.index', compact('goals'));
     }
 
@@ -21,7 +21,7 @@ class GoalController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required',
+            'title' => 'required|string',
             'target_amount' => 'required|numeric|min:1',
             'deadline' => 'nullable|date'
         ]);
@@ -33,9 +33,42 @@ class GoalController extends Controller
             'deadline' => $request->deadline
         ]);
 
-        return redirect()->route('goal.index');
+        return redirect()->route('goal.index')
+            ->with('success', 'Goal berhasil ditambahkan');
+    }
+
+    public function edit($id)
+    {
+        $goal = Goal::where('user_id', auth()->id())->findOrFail($id);
+        return view('goal.edit', compact('goal'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $goal = Goal::where('user_id', auth()->id())->findOrFail($id);
+
+        $request->validate([
+            'title' => 'required|string',
+            'target_amount' => 'required|numeric|min:1',
+            'deadline' => 'nullable|date'
+        ]);
+
+        $goal->update([
+            'title' => $request->title,
+            'target_amount' => $request->target_amount,
+            'deadline' => $request->deadline
+        ]);
+
+        return redirect()->route('goal.index')
+            ->with('success', 'Goal berhasil diperbarui');
+    }
+
+    public function destroy($id)
+    {
+        $goal = Goal::where('user_id', auth()->id())->findOrFail($id);
+        $goal->delete();
+
+        return redirect()->route('goal.index')
+            ->with('success', 'Goal berhasil dihapus');
     }
 }
-
-
-

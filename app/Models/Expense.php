@@ -12,19 +12,12 @@ class Expense extends Model
     protected $fillable = [
         'user_id',
         'wallet_id',
-        'category_id',
-        'title',
         'amount',
-        'notes',
+        'description',
     ];
 
     public function wallet()
     {
         return $this->belongsTo(Wallet::class);
-    }
-
-    public function category()
-    {
-        return $this->belongsTo(Category::class);
     }
 }
