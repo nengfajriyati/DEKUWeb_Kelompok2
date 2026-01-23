@@ -27,28 +27,26 @@ class ExpenseController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'wallet_id' => 'required|exists:wallets,id',
-            'amount' => ['required', 'regex:/^[0-9]+$/'],
-            'description' => 'nullable|string'
+            'wallet_id'   => 'required|exists:wallets,id',
+            'amount'      => 'required|numeric|min:1',
+            'date'        => 'required|date',
+            'description' => 'nullable|string',
         ]);
 
-        // ❌ larang tanda +
-        if (str_contains($request->amount, '+')) {
-            return back()->withInput()
-                ->with('error', 'Nominal tidak boleh mengandung tanda +');
-        }
-
-        $wallet = Wallet::findOrFail($request->wallet_id);
+        $wallet = Wallet::where('id', $request->wallet_id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
 
         if ($request->amount > $wallet->balance) {
             return back()->with('error', 'Saldo dompet tidak mencukupi');
         }
 
         Expense::create([
-            'user_id' => auth()->id(),
-            'wallet_id' => $wallet->id,
-            'amount' => $request->amount,
+            'user_id'     => auth()->id(),
+            'wallet_id'   => $wallet->id,
+            'amount'      => $request->amount,
             'description' => $request->description,
+            'created_at'  => $request->date, // ⬅️ PENTING
         ]);
 
         $wallet->decrement('balance', $request->amount);
@@ -59,8 +57,8 @@ class ExpenseController extends Controller
 
     public function edit($id)
     {
-        $expense = Expense::where('user_id', auth()->id())
-            ->where('id', $id)
+        $expense = Expense::where('id', $id)
+            ->where('user_id', auth()->id())
             ->firstOrFail();
 
         $wallets = Wallet::where('user_id', auth()->id())->get();
@@ -70,38 +68,32 @@ class ExpenseController extends Controller
 
     public function update(Request $request, $id)
     {
-        $expense = Expense::where('user_id', auth()->id())
-            ->where('id', $id)
-            ->firstOrFail();
-
         $request->validate([
-            'wallet_id' => 'required|exists:wallets,id',
-            'amount' => ['required', 'regex:/^[0-9]+$/'],
-            'description' => 'nullable|string'
+            'wallet_id'   => 'required|exists:wallets,id',
+            'amount'      => 'required|numeric|min:1',
+            'date'        => 'required|date',
+            'description' => 'nullable|string',
         ]);
 
-        // ❌ larang tanda +
-        if (str_contains($request->amount, '+')) {
-            return back()->withInput()
-                ->with('error', 'Nominal tidak boleh mengandung tanda +');
-        }
+        $expense = Expense::where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
 
         $oldWallet = Wallet::findOrFail($expense->wallet_id);
         $newWallet = Wallet::findOrFail($request->wallet_id);
 
-        // balikin saldo lama
         $oldWallet->increment('balance', $expense->amount);
 
         if ($request->amount > $newWallet->balance) {
-            // rollback saldo lama
             $oldWallet->decrement('balance', $expense->amount);
             return back()->with('error', 'Saldo dompet tidak mencukupi');
         }
 
         $expense->update([
-            'wallet_id' => $request->wallet_id,
-            'amount' => $request->amount,
+            'wallet_id'   => $newWallet->id,
+            'amount'      => $request->amount,
             'description' => $request->description,
+            'created_at'  => $request->date, // ⬅️ UPDATE TANGGAL
         ]);
 
         $newWallet->decrement('balance', $request->amount);
@@ -112,13 +104,11 @@ class ExpenseController extends Controller
 
     public function destroy($id)
     {
-        $expense = Expense::where('user_id', auth()->id())
-            ->where('id', $id)
+        $expense = Expense::where('id', $id)
+            ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        $wallet = Wallet::findOrFail($expense->wallet_id);
-
-        $wallet->increment('balance', $expense->amount);
+        $expense->wallet->increment('balance', $expense->amount);
         $expense->delete();
 
         return redirect()->route('expense.index')

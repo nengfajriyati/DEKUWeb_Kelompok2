@@ -12,7 +12,7 @@ class Wallet extends Model
     protected $fillable = [
         'user_id',
         'name',
-        'balance'
+        'balance',
     ];
 
     public function incomes()

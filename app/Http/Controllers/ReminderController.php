@@ -10,7 +10,7 @@ class ReminderController extends Controller
     public function index()
     {
         $reminders = Reminder::where('user_id', auth()->id())
-            ->orderBy('remind_date', 'asc')
+            ->orderBy('date', 'asc')
             ->get();
 
         return view('reminder.index', compact('reminders'));
@@ -24,18 +24,49 @@ class ReminderController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string',
-            'remind_date' => 'required|date'
+            'title' => 'required|string|max:100',
+            'date'  => 'required|date',
+            'note'  => 'nullable|string',
         ]);
 
         Reminder::create([
             'user_id' => auth()->id(),
-            'title' => $request->title,
-            'remind_date' => $request->remind_date
+            'title'   => $request->title,
+            'date'    => $request->date,
+            'note'    => $request->note,
         ]);
 
         return redirect()->route('reminder.index')
             ->with('success', 'Reminder berhasil ditambahkan');
+    }
+
+    public function edit($id)
+    {
+        $reminder = Reminder::where('user_id', auth()->id())
+            ->findOrFail($id);
+
+        return view('reminder.edit', compact('reminder'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'title' => 'required|string|max:100',
+            'date'  => 'required|date',
+            'note'  => 'nullable|string',
+        ]);
+
+        $reminder = Reminder::where('user_id', auth()->id())
+            ->findOrFail($id);
+
+        $reminder->update([
+            'title' => $request->title,
+            'date'  => $request->date,
+            'note'  => $request->note,
+        ]);
+
+        return redirect()->route('reminder.index')
+            ->with('success', 'Reminder berhasil diperbarui');
     }
 
     public function destroy($id)

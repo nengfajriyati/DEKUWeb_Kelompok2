@@ -1,53 +1,66 @@
 @extends('layouts.admin')
 
+@section('page-title', 'Tambah Pengeluaran')
+
 @section('content')
-<div class="container">
-    <h4 class="mb-3">➖ Tambah Pengeluaran</h4>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <form action="{{ route('expense.store') }}" method="POST">
-                @csrf
+<div class="card shadow-sm border-0">
+    <div class="card-body">
 
-                <div class="mb-3">
-                    <label>Dompet</label>
-                    <select name="wallet_id" class="form-select" required>
-                        <option value="">-- Pilih Dompet --</option>
-                        @foreach($wallets as $wallet)
-                            <option value="{{ $wallet->id }}">
-                                {{ $wallet->name }} (Rp {{ number_format($wallet->balance,0,',','.') }})
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+        <h4 class="fw-bold mb-4">
+            <i class="bi bi-dash-circle text-danger me-2"></i>
+            Tambah Pengeluaran
+        </h4>
 
-                <div class="mb-3">
-                <div class="mb-3">
-                    <label>Nominal</label>
-                    <input 
-                        type="number" 
-                        name="amount" 
-                        class="form-control" 
-                        min="1"
-                        step="1"
-                        onkeydown="return event.key !== '+'"
-                        required
-                    >
-                </div>
+        <form action="{{ route('expense.store') }}" method="POST">
+            @csrf
 
-                </div>
+            {{-- TANGGAL --}}
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Tanggal</label>
+                <input type="date" name="date" class="form-control" required>
+            </div>
 
-                <div class="mb-3">
-                    <label>Deskripsi</label>
-                    <textarea name="description" class="form-control"></textarea>
-                </div>
+            {{-- PILIH DOMPET --}}
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Pilih Dompet</label>
+                <select name="wallet_id" class="form-select form-select-lg" required>
+                    <option value="" disabled selected>
+                        🔽 Pilih Dompet
+                    </option>
 
+                    @foreach($wallets as $wallet)
+                        <option value="{{ $wallet->id }}">
+                            💳 {{ $wallet->name }}
+                            — Saldo: Rp {{ number_format($wallet->balance,0,',','.') }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- NOMINAL --}}
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Nominal</label>
+                <input type="number" name="amount" min="1" class="form-control" required>
+            </div>
+
+            {{-- KETERANGAN --}}
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Keterangan</label>
+                <input type="text" name="description" class="form-control">
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a href="{{ route('expense.index') }}" class="btn btn-secondary">
+                    Kembali
+                </a>
                 <button class="btn btn-danger">
                     <i class="bi bi-save"></i> Simpan
                 </button>
-                <a href="{{ route('expense.index') }}" class="btn btn-secondary">Kembali</a>
-            </form>
-        </div>
+            </div>
+
+        </form>
     </div>
 </div>
+
 @endsection

@@ -5,11 +5,11 @@
     <title>@yield('page-title') - DEKU</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- BOOTSTRAP -->
+    {{-- BOOTSTRAP --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
-    <!-- SWEETALERT -->
+    {{-- SWEETALERT --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
@@ -18,30 +18,16 @@
             font-family: 'Segoe UI', sans-serif;
         }
 
-        /* SIDEBAR */
+        /* ===== SIDEBAR ===== */
         .sidebar {
             width: 240px;
             height: 100vh;
             position: fixed;
+            left: 0;
+            top: 0;
             background: linear-gradient(180deg, #0d1b2a, #1b263b);
             padding-top: 30px;
-        }
-
-        .logo {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .logo i {
-            font-size: 48px;
-            color: #4cc9f0;
-        }
-
-        .logo h4 {
-            color: white;
-            margin-top: 10px;
-            font-weight: 700;
-            letter-spacing: 1px;
+            z-index: 1040;
         }
 
         .sidebar a {
@@ -49,7 +35,6 @@
             padding: 12px 22px;
             display: block;
             text-decoration: none;
-            font-size: 15px;
             transition: 0.3s;
         }
 
@@ -59,46 +44,50 @@
             padding-left: 28px;
         }
 
-        /* CONTENT */
+        /* ===== CONTENT ===== */
         .content-wrapper {
             margin-left: 240px;
-            padding: 30px;
+            padding: 24px;
+            transition: all 0.3s;
         }
 
         .navbar {
             background: white;
             border-radius: 14px;
-            padding: 16px 24px;
+            padding: 14px 20px;
         }
 
         .card {
             border-radius: 16px;
             border: none;
-            transition: 0.3s;
         }
 
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.08);
-        }
+        /* ===== MOBILE ===== */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: 0.3s;
+            }
 
-        .stat-icon {
-            font-size: 36px;
-            opacity: 0.15;
-            position: absolute;
-            right: 20px;
-            top: 20px;
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .content-wrapper {
+                margin-left: 0;
+                padding: 16px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-    <div class="logo">
-        <i class="bi bi-gem"></i>
-        <h4>DEKU</h4>
+{{-- SIDEBAR --}}
+<div class="sidebar" id="sidebar">
+    <div class="text-center mb-4">
+        <i class="bi bi-gem fs-1 text-info"></i>
+        <h4 class="text-white fw-bold mt-2">DEKU</h4>
     </div>
 
     <a href="/dashboard"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
@@ -109,18 +98,24 @@
     <a href="/reminder"><i class="bi bi-bell me-2"></i> Reminder</a>
 </div>
 
-<!-- CONTENT -->
+{{-- CONTENT --}}
 <div class="content-wrapper">
 
-    <!-- TOP NAV -->
-    <nav class="navbar shadow-sm mb-4">
-        <div class="d-flex align-items-center">
-            <i class="bi bi-grid-fill text-primary me-2 fs-4"></i>
+    {{-- NAVBAR --}}
+    <nav class="navbar shadow-sm mb-4 d-flex justify-content-between">
+
+        <div class="d-flex align-items-center gap-2">
+            {{-- HAMBURGER (MOBILE) --}}
+            <button class="btn btn-outline-primary d-md-none"
+                    onclick="toggleSidebar()">
+                <i class="bi bi-list"></i>
+            </button>
+
             <h5 class="m-0 fw-semibold">@yield('page-title')</h5>
         </div>
 
-        <div class="d-flex align-items-center">
-            <span class="me-3 text-secondary">
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-secondary d-none d-md-inline">
                 Halo, {{ Auth::user()->name ?? 'User' }} 👋
             </span>
 
@@ -131,6 +126,7 @@
                 </button>
             </form>
         </div>
+
     </nav>
 
     @yield('content')
@@ -138,6 +134,12 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('show');
+}
+</script>
 
 </body>
 </html>

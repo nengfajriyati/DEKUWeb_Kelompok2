@@ -41,10 +41,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/expense/{id}/edit', [ExpenseController::class, 'edit'])->name('expense.edit');
     Route::put('/expense/{id}', [ExpenseController::class, 'update'])->name('expense.update');
-
     Route::delete('/expense/{id}', [ExpenseController::class, 'destroy'])->name('expense.destroy');
 
 });
+
 
 Route::resource('wallet', WalletController::class);
 
@@ -58,10 +58,9 @@ Route::middleware('auth')->group(function () {
 
 Route::resource('goal', GoalController::class)->middleware('auth');
 
-Route::resource('reminder', ReminderController::class)
-    ->only(['index', 'create', 'store', 'destroy'])
-    ->middleware('auth');
-
+Route::middleware('auth')->group(function () {
+    Route::resource('reminder', ReminderController::class);
+});
 
 
 require __DIR__.'/auth.php';

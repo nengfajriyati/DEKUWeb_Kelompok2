@@ -11,7 +11,8 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('title');
-            $table->date('remind_date');
+            $table->date('date'); // ✅ FIX
+            $table->text('note')->nullable();
             $table->timestamps();
         });
     }

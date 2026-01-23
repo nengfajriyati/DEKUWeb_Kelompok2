@@ -13,7 +13,12 @@ class Income extends Model
         'user_id',
         'wallet_id',
         'amount',
+        'date',
         'description',
+    ];
+
+    protected $casts = [
+        'date' => 'date',
     ];
 
     public function wallet()

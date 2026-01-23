@@ -12,7 +12,7 @@ class IncomeController extends Controller
     {
         $incomes = Income::where('user_id', auth()->id())
             ->with('wallet')
-            ->latest() // pakai created_at
+            ->orderBy('date', 'desc')
             ->get();
 
         return view('income.index', compact('incomes'));
@@ -27,28 +27,29 @@ class IncomeController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'wallet_id' => 'required|exists:wallets,id',
+            'wallet_id' => 'required',
             'amount' => 'required|numeric|min:1',
-            'description' => 'required',
+            'description' => 'nullable|string',
         ]);
 
-        $income = Income::create([
+        Income::create([
             'user_id' => auth()->id(),
             'wallet_id' => $request->wallet_id,
             'amount' => $request->amount,
             'description' => $request->description,
         ]);
 
-        // UPDATE SALDO DOMPET
-        $income->wallet->increment('balance', $request->amount);
-
         return redirect()->route('income.index')
             ->with('success', 'Pemasukan berhasil ditambahkan');
     }
 
+
     public function edit($id)
     {
-        $income = Income::findOrFail($id);
+        $income = Income::where('user_id', auth()->id())
+            ->where('id', $id)
+            ->firstOrFail();
+
         $wallets = Wallet::where('user_id', auth()->id())->get();
 
         return view('income.edit', compact('income', 'wallets'));
@@ -57,21 +58,29 @@ class IncomeController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'wallet_id' => 'required|exists:wallets,id',
-            'amount' => 'required|numeric|min:1',
-            'description' => 'required',
+            'wallet_id'   => 'required|exists:wallets,id',
+            'amount'      => 'required|numeric|min:1',
+            'date'        => 'required|date',
+            'description' => 'nullable|string',
         ]);
 
-        $income = Income::findOrFail($id);
+        $income = Income::where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
 
-        // BALIKIN SALDO LAMA
-        $income->wallet->decrement('balance', $income->amount);
+        $oldWallet = Wallet::findOrFail($income->wallet_id);
+        $newWallet = Wallet::findOrFail($request->wallet_id);
 
-        // UPDATE DATA
-        $income->update($request->all());
+        $oldWallet->decrement('balance', $income->amount);
 
-        // TAMBAH SALDO BARU
-        $income->wallet->increment('balance', $request->amount);
+        $income->update([
+            'wallet_id'   => $newWallet->id,
+            'amount'      => $request->amount,
+            'date'        => $request->date,
+            'description' => $request->description,
+        ]);
+
+        $newWallet->increment('balance', $request->amount);
 
         return redirect()->route('income.index')
             ->with('success', 'Pemasukan berhasil diperbarui');
@@ -79,10 +88,12 @@ class IncomeController extends Controller
 
     public function destroy($id)
     {
-        $income = Income::findOrFail($id);
+        $income = Income::where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
 
-        // KURANGI SALDO DOMPET
-        $income->wallet->decrement('balance', $income->amount);
+        $wallet = Wallet::findOrFail($income->wallet_id);
+        $wallet->decrement('balance', $income->amount);
 
         $income->delete();
 

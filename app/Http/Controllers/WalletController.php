@@ -21,13 +21,13 @@ class WalletController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'balance' => 'required|numeric',
+            'name'    => 'required|string|max:100',
+            'balance' => 'required|numeric|min:0',
         ]);
 
         Wallet::create([
             'user_id' => auth()->id(),
-            'name' => $request->name,
+            'name'    => $request->name,
             'balance' => $request->balance,
         ]);
 
@@ -37,7 +37,10 @@ class WalletController extends Controller
 
     public function edit($id)
     {
-        $wallet = Wallet::findOrFail($id);
+        $wallet = Wallet::where('user_id', auth()->id())
+                        ->where('id', $id)
+                        ->firstOrFail();
+
         return view('wallet.edit', compact('wallet'));
     }
 
@@ -47,28 +50,31 @@ class WalletController extends Controller
             'name' => 'required|string|max:100',
         ]);
 
-        $wallet = Wallet::findOrFail($id);
+        $wallet = Wallet::where('user_id', auth()->id())
+                        ->where('id', $id)
+                        ->firstOrFail();
+
         $wallet->update([
             'name' => $request->name,
         ]);
 
         return redirect()->route('wallet.index')
-                        ->with('success', 'Dompet berhasil diperbarui');
+            ->with('success', 'Dompet berhasil diperbarui');
     }
 
     public function destroy($id)
     {
-        $wallet = Wallet::findOrFail($id);
+        $wallet = Wallet::where('user_id', auth()->id())
+                        ->where('id', $id)
+                        ->firstOrFail();
 
-        // optional safety (kalau ada relasi income / expense)
         if ($wallet->incomes()->count() > 0 || $wallet->expenses()->count() > 0) {
-            return redirect()->back()
-                ->with('error', 'Dompet tidak bisa dihapus karena masih memiliki transaksi');
+            return back()->with('error', 'Dompet tidak bisa dihapus karena masih memiliki transaksi');
         }
 
         $wallet->delete();
 
         return redirect()->route('wallet.index')
-                        ->with('success', 'Dompet berhasil dihapus');
+            ->with('success', 'Dompet berhasil dihapus');
     }
 }

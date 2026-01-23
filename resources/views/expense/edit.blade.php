@@ -1,43 +1,58 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+
+@section('page-title', 'Edit Pengeluaran')
 
 @section('content')
-<div class="container">
-    <h4 class="mb-3">✏️ Edit Pengeluaran</h4>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <form action="{{ route('expenses.update',$expense->id) }}" method="POST">
-                @csrf @method('PUT')
+@if(session('error'))
+<script>
+Swal.fire('Gagal', '{{ session('error') }}', 'error');
+</script>
+@endif
 
-                <div class="mb-3">
-                    <label>Dompet</label>
-                    <select name="wallet_id" class="form-select">
-                        @foreach($wallets as $wallet)
-                            <option value="{{ $wallet->id }}"
-                                {{ $expense->wallet_id == $wallet->id ? 'selected' : '' }}>
-                                {{ $wallet->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form action="{{ route('expense.update', $expense->id) }}" method="POST">
+            @csrf
+            @method('PUT')
 
-                <div class="mb-3">
-                    <label>Nominal</label>
-                    <input type="number" name="amount" class="form-control"
-                        value="{{ $expense->amount }}" min="1">
-                </div>
+            <div class="mb-3">
+                <label class="form-label">Dompet</label>
+                <select name="wallet_id" class="form-select" required>
+                    @foreach($wallets as $wallet)
+                        <option value="{{ $wallet->id }}"
+                            {{ $expense->wallet_id == $wallet->id ? 'selected' : '' }}>
+                            {{ $wallet->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
-                <div class="mb-3">
-                    <label>Deskripsi</label>
-                    <textarea name="description" class="form-control">{{ $expense->description }}</textarea>
-                </div>
+            <div class="mb-3">
+                <label class="form-label">Nominal</label>
+                <input type="number" name="amount" min="1"
+                       value="{{ $expense->amount }}"
+                       class="form-control" required>
+            </div>
 
-                <button class="btn btn-warning">
-                    <i class="bi bi-save"></i> Update
-                </button>
-                <a href="{{ route('expenses.index') }}" class="btn btn-secondary">Kembali</a>
-            </form>
-        </div>
+            <div class="mb-3">
+                <label class="form-label">Tanggal</label>
+                <input type="date" name="date"
+                       value="{{ $expense->created_at->format('Y-m-d') }}"
+                       class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Keterangan</label>
+                <input type="text" name="description"
+                       value="{{ $expense->description }}"
+                       class="form-control">
+            </div>
+
+            <button class="btn btn-warning">Update</button>
+            <a href="{{ route('expense.index') }}" class="btn btn-secondary">Kembali</a>
+        </form>
     </div>
 </div>
+
 @endsection
