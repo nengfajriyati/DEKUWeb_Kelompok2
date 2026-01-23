@@ -22,7 +22,7 @@ Swal.fire('Gagal', '{{ session('error') }}', 'error');
                     @foreach($wallets as $wallet)
                         <option value="{{ $wallet->id }}"
                             {{ $expense->wallet_id == $wallet->id ? 'selected' : '' }}>
-                            {{ $wallet->name }}
+                            {{ $wallet->name }} — Rp {{ number_format($wallet->balance, 0, ',', '.') }}
                         </option>
                     @endforeach
                 </select>
